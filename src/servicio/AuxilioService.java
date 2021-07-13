@@ -1,7 +1,5 @@
 package servicio;
 
-
-
 import java.math.BigDecimal;
 
 import dominio.Auxilio;
@@ -14,20 +12,16 @@ import dominio.TipoReparacion;
 import dominio.Vehiculo;
 
 public class AuxilioService {
-	
+
 	private Auxilio auxilio;
 	private PedidoService pedidoService;
 	private TipoAuxilioService tipoAuxilioService;
 	private ClienteService clienteService;
 	private VehiculoService vehiculoService;
 	private CoberturaService coberturaService;
-	
-	
-	public AuxilioService(PedidoService pedidoService, 
-			TipoAuxilioService tipoAuxilioService, 
-			ClienteService clienteService,
-			VehiculoService vehiculoService,
-			CoberturaService coberturaService) {	
+
+	public AuxilioService(PedidoService pedidoService, TipoAuxilioService tipoAuxilioService,
+			ClienteService clienteService, VehiculoService vehiculoService, CoberturaService coberturaService) {
 		auxilio = new Auxilio();
 		this.pedidoService = pedidoService;
 		this.tipoAuxilioService = tipoAuxilioService;
@@ -36,11 +30,15 @@ public class AuxilioService {
 		this.coberturaService = new CoberturaService();
 		this.auxilio.setAuxilioDisponibles(tipoAuxilioService.tipoAuxiliosDefault());
 	}
-	
-	public void crearPedido(String lugar, TipoAuxilio tipoAuxilio, String nombreCliente, Integer pesoVehiculo, TipoCobertura tipoCobertura) {
-		Vehiculo vehiculo = vehiculoService.crearVehiculo(pesoVehiculo);
+
+	public void crearPedido(String lugar, TipoAuxilio tipoAuxilio, String nombreCliente, String apellidoCliente,
+			String dni, boolean moroso, BigDecimal costo, Integer pesoVehiculo, String matricula,
+			Integer cantidadReparaciones, Integer cantidadRemolques, TipoCobertura tipoCobertura) {
+		Vehiculo vehiculo = vehiculoService.crearVehiculo(pesoVehiculo, matricula, cantidadRemolques,
+				cantidadRemolques);
 		Cobertura cobertura = getCoberturaByTipo(tipoCobertura);
-		Cliente cliente = clienteService.crearCliente(nombreCliente, vehiculo, cobertura);
+		Cliente cliente = clienteService.crearCliente(nombreCliente, apellidoCliente, dni, vehiculo, cobertura, moroso,
+				costo);
 
 		Pedido pedido = pedidoService.crearPedido(lugar, cliente, tipoAuxilio);
 		auxilio.addPedido(pedido);
@@ -54,16 +52,15 @@ public class AuxilioService {
 		return cobertura;
 	}
 
-	
 	public void listarPedidos() {
-		System.out.println("LISTADO DE PEDIDOS");		
+		System.out.println("LISTADO DE PEDIDOS");
 		for (Pedido pedido : auxilio.getPedidos()) {
-			
+
 			System.out.println(pedido.toString());
 		}
-		
+
 	}
-	
+
 	public void listarTipoAuxilios() {
 		System.out.println("LISTADO DE TIPOS DE AUXILIOS");
 		for (TipoAuxilio tipo : auxilio.getAuxilioDisponibles()) {
@@ -71,11 +68,13 @@ public class AuxilioService {
 		}
 	}
 
-	public void agrerTipoAuxilio(String descripcion, TipoReparacion tipoReparacion, boolean requiereRemolque, BigDecimal costoUnitario) {
-		
-		TipoAuxilio auxilioDisponible = tipoAuxilioService.crearTipoAuxilio(descripcion, tipoReparacion, requiereRemolque, costoUnitario); 
+	public void agrerTipoAuxilio(String descripcion, TipoReparacion tipoReparacion, boolean requiereRemolque,
+			BigDecimal costoUnitario) {
+
+		TipoAuxilio auxilioDisponible = tipoAuxilioService.crearTipoAuxilio(descripcion, tipoReparacion,
+				requiereRemolque, costoUnitario);
 		auxilio.addAuxilioDisponible(auxilioDisponible);
-		
+
 	}
 
 	public TipoAuxilio getTipoAuxilioPorDescripcion(String descripcion) {
@@ -87,5 +86,6 @@ public class AuxilioService {
 		// si no existe se debe lanzar una excption
 		return tipoAuxilioABuscar;
 	}
+
 
 }

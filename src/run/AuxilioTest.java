@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import dominio.Cliente;
 import dominio.Cobertura;
+import dominio.TipoAuxilio;
 import dominio.TipoCobertura;
 import dominio.TipoReparacion;
 import dominio.Vehiculo;
@@ -38,12 +39,14 @@ public class AuxilioTest {
 		auxilioService.listarTipoAuxilios();
 		
 
-		auxilioService.crearPedido("CABA", auxilioService.getTipoAuxilioPorDescripcion("Pinchadura"), "Pepe", 2000, TipoCobertura.ECONOMIC);
-		auxilioService.crearPedido("PBA", auxilioService.getTipoAuxilioPorDescripcion("Choque"), "Toto", 4000, TipoCobertura.PLATINUM);
+		//auxilioService.crearPedido("CABA", auxilioService.getTipoAuxilioPorDescripcion("Pinchadura"), "Pepe", 2000, TipoCobertura.ECONOMIC);
+		//auxilioService.crearPedido("PBA", auxilioService.getTipoAuxilioPorDescripcion("Choque"), "Toto", 4000, TipoCobertura.PLATINUM);
+		
+		//auxilioService.crearPedido("CABA", auxilioService.getTipoAuxilioPorDescripcion("Bateria"), "Juan", "Perez", "35233665", false, 5.000, 1.500, "AB806AX", 1, 1, TipoCobertura.CLASSIC);
 		
 		auxilioService.listarPedidos();
+
 		
-		
-		
+			
 	}
 }
