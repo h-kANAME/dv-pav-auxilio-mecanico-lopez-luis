@@ -8,14 +8,13 @@ public class CoberturaClassic extends Cobertura {
 	}
 
 	@Override
-	public Boolean permiteRemolque() {
-
-		return permiteRemolque;
-
+	public TipoReparacion tipoReaparacion() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public TipoReparacion obtenerTipoDeReparacion() {
+	public Boolean permiteRemolque() {
 		// TODO Auto-generated method stub
 		return null;
 	}

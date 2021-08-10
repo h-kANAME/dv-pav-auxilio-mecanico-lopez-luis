@@ -9,6 +9,7 @@ public class Cliente {
 	private String dni;
 	private Vehiculo vehiculo;
 	private Cobertura cobertura;
+	
 
 	private Boolean moroso;
 	private BigDecimal costo;

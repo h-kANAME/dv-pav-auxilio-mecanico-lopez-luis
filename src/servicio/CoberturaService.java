@@ -1,33 +1,51 @@
 package servicio;
 
+import dominio.Cliente;
 import dominio.Cobertura;
 import dominio.CoberturaClassic;
 import dominio.CoberturaEconomic;
 import dominio.CoberturaPlatinum;
+import dominio.TipoAuxilio;
+import dominio.TipoCobertura;
 import dominio.TipoReparacion;
+import Exceptions.noPermiteReparacion;
 
 public class CoberturaService {
 
-	// Double unlimited = Double.POSITIVE_INFINITY;
-	// Fuente infinito
-	// https://www.iteramos.com/pregunta/35415/como-implementar-el-infinito-en-java
-
-	Integer unlimited = Integer.MAX_VALUE;
-	// Fuente maximo integer
-	// https://qastack.mx/programming/12952024/how-to-implement-infinity-in-java
+	Integer infinito = Integer.MAX_VALUE;
 
 	public Cobertura crearCoberturaEconomic() {
 		return new CoberturaEconomic(false, 0, TipoReparacion.SIMPLE, 5);
-		// permiteRemolque, limiteRemolque, TipoReparacion, limiteReparacion
 	}
 
-	public Cobertura crearCoberturaClassic() {
-		return new CoberturaClassic(true, 5, TipoReparacion.ILIMITADO, this.unlimited);
+	public Cobertura crearCoberturaClassic(Cliente cliente) {
+		return new CoberturaClassic(true, 5, TipoReparacion.COMPLEJO, this.infinito);
 	}
 
-	public Cobertura crearCoberturaPlatinum() {
+	public Cobertura crearCoberturaPlatinium(Cliente cliente) {
+		return new CoberturaPlatinum(true, this.infinito, TipoReparacion.COMPLEJO, this.infinito);
+	}
 
-		return new CoberturaPlatinum(true, this.unlimited, TipoReparacion.ILIMITADO, this.unlimited);
+	public Boolean permiteReparacion(Cobertura cobertura, TipoAuxilio tipoAuxilio, Integer cantidadReparaciones)
+			throws noPermiteReparacion {
+		Boolean permiteReparacion;
+
+		if (tipoAuxilio.getRequiereRemolque().equals(true)
+				&& cobertura.getTipoCobertura().equals(TipoCobertura.ECONOMIC)) {
+			permiteReparacion = false;
+			throw new noPermiteReparacion("La cobertura Economic no permite pedidos de auxilio con remolque");
+		}
+		if (cobertura.getTipoCobertura().equals(TipoCobertura.ECONOMIC) & cantidadReparaciones >= 5
+				|| cobertura.getTipoCobertura().equals(TipoCobertura.ECONOMIC)
+						&& cobertura.getTipoReparacion().equals(TipoReparacion.COMPLEJO)) {
+			permiteReparacion = false;
+			throw new noPermiteReparacion(
+					"La cobertura Economic no permite mas de 5 reparaciones, ni reparaciones complejas");
+		} else {
+			permiteReparacion = true;
+		}
+
+		return permiteReparacion;
 	}
 
 }

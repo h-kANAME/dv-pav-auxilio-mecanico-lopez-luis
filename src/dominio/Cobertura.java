@@ -3,11 +3,10 @@ package dominio;
 public abstract class Cobertura {
 
 	private TipoCobertura tipoCobertura;
-	private TipoReparacion tipoReparacion;
 	protected boolean permiteRemolque;
 	private Integer limiteRemolque;
+	private TipoReparacion tipoReparacion;
 	private Integer limiteReparacion;
-	private Vehiculo vehiculo;
 
 	protected Cobertura(TipoCobertura tipoCobertura, boolean permiteRemolque, Integer limiteRemolque,
 			TipoReparacion tipoReparacion, Integer limiteReparacion) {
@@ -16,12 +15,7 @@ public abstract class Cobertura {
 		this.limiteRemolque = limiteRemolque;
 		this.tipoReparacion = tipoReparacion;
 		this.limiteReparacion = limiteReparacion;
-
 	}
-
-	public abstract Boolean permiteRemolque();
-
-	public abstract TipoReparacion obtenerTipoDeReparacion();
 
 	public TipoCobertura getTipoCobertura() {
 		return tipoCobertura;
@@ -63,11 +57,15 @@ public abstract class Cobertura {
 		this.limiteReparacion = limiteReparacion;
 	}
 
+	public abstract Boolean permiteRemolque();
+
+	public abstract TipoReparacion tipoReaparacion();
+
 	@Override
 	public String toString() {
-		return "Cobertura [tipoCobertura=" + tipoCobertura + ", tipoReparacion=" + tipoReparacion + ", permiteRemolque="
-				+ permiteRemolque + ", limiteRemolque=" + limiteRemolque + ", limiteReparacion=" + limiteReparacion
-				+ ", vehiculo=" + vehiculo + "]";
+		return "Cobertura [tipoCobertura=" + tipoCobertura + ", permiteRemolque=" + permiteRemolque
+				+ ", limiteRemolque=" + limiteRemolque + ", tipoReparacion=" + tipoReparacion + ", limiteReparacion="
+				+ limiteReparacion + "]";
 	}
 
 }

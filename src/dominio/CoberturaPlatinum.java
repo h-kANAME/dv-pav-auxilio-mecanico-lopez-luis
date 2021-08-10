@@ -9,13 +9,12 @@ public class CoberturaPlatinum extends Cobertura {
 
 	@Override
 	public Boolean permiteRemolque() {
-
-		return true;
-
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public TipoReparacion obtenerTipoDeReparacion() {
+	public TipoReparacion tipoReaparacion() {
 		// TODO Auto-generated method stub
 		return null;
 	}

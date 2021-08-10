@@ -10,6 +10,7 @@ import dominio.TipoAuxilio;
 import dominio.TipoCobertura;
 import dominio.TipoReparacion;
 import dominio.Vehiculo;
+import Exceptions.noPermiteReparacion;
 
 public class AuxilioService {
 
@@ -31,17 +32,37 @@ public class AuxilioService {
 		this.auxilio.setAuxilioDisponibles(tipoAuxilioService.tipoAuxiliosDefault());
 	}
 
-	public void crearPedido(String lugar, TipoAuxilio tipoAuxilio, String nombreCliente, String apellidoCliente,
-			String dni, boolean moroso, BigDecimal costo, Integer pesoVehiculo, String matricula,
-			Integer cantidadReparaciones, Integer cantidadRemolques, TipoCobertura tipoCobertura) {
-		Vehiculo vehiculo = vehiculoService.crearVehiculo(pesoVehiculo, matricula, cantidadRemolques,
-				cantidadRemolques);
+	public void crearPedido(String lugar, TipoAuxilio tipoAuxilio, String nombreCliente, String apellido, String dni,
+			Boolean moroso, BigDecimal costo, Integer pesoVehiculo, TipoCobertura tipoCobertura, String patente,
+			Integer cantidadReparaciones, Integer cantidadRemolques) {
+		Vehiculo vehiculo = vehiculoService.crearVehiculo(pesoVehiculo, patente, cantidadRemolques,
+				cantidadReparaciones);
 		Cobertura cobertura = getCoberturaByTipo(tipoCobertura);
-		Cliente cliente = clienteService.crearCliente(nombreCliente, apellidoCliente, dni, vehiculo, cobertura, moroso,
-				costo);
+		BigDecimal costoFinal = new BigDecimal(0);
+		Boolean esPesado = null;
+		Boolean permiteReparacion = false;
+
+		costoFinal = clienteService.aumentoMoroso(moroso, costo);
+		esPesado = vehiculoService.vehiculoPesado(pesoVehiculo);
+		costoFinal = vehiculoService.aumentoPesado(esPesado, costoFinal);
+
+		Cliente cliente = clienteService.crearCliente(nombreCliente, apellido, patente, vehiculo, cobertura, moroso,
+				costoFinal);
 
 		Pedido pedido = pedidoService.crearPedido(lugar, cliente, tipoAuxilio);
-		auxilio.addPedido(pedido);
+
+		try {
+			permiteReparacion = coberturaService.permiteReparacion(cobertura, tipoAuxilio, cantidadReparaciones);
+		} catch (noPermiteReparacion e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (permiteReparacion == true) {
+			auxilio.addPedido(pedido);
+			vehiculo.setCantidadReparaciones(cantidadReparaciones + 1);
+		}
+
 	}
 
 	protected Cobertura getCoberturaByTipo(TipoCobertura tipoCobertura) {
@@ -49,11 +70,17 @@ public class AuxilioService {
 		if (TipoCobertura.ECONOMIC == tipoCobertura) {
 			cobertura = coberturaService.crearCoberturaEconomic();
 		}
+		if (TipoCobertura.CLASSIC == tipoCobertura) {
+			cobertura = coberturaService.crearCoberturaClassic(null);
+		}
+		if (TipoCobertura.PLATINUM == tipoCobertura) {
+			cobertura = coberturaService.crearCoberturaPlatinium(null);
+		}
 		return cobertura;
 	}
 
 	public void listarPedidos() {
-		System.out.println("LISTADO DE PEDIDOS");
+		System.out.println("Pedidos realizados:");
 		for (Pedido pedido : auxilio.getPedidos()) {
 
 			System.out.println(pedido.toString());
@@ -61,14 +88,28 @@ public class AuxilioService {
 
 	}
 
+	public int listarPedidosPorMorosos() {
+		int contador = 0;
+		for (Pedido pedido : auxilio.getPedidos()) {
+			if (pedido.getCliente().getMoroso().equals(true)) {
+				System.out.println(pedido.toString());
+				contador++;
+			}
+		}
+		System.out.println("Total clientes morosos: " + contador);
+		return contador;
+
+	}
+
 	public void listarTipoAuxilios() {
-		System.out.println("LISTADO DE TIPOS DE AUXILIOS");
+		System.out.println("Tipos de Auxilio");
+		System.out.println("");
 		for (TipoAuxilio tipo : auxilio.getAuxilioDisponibles()) {
 			System.out.println(tipo);
 		}
 	}
 
-	public void agrerTipoAuxilio(String descripcion, TipoReparacion tipoReparacion, boolean requiereRemolque,
+	public void agregarTipoAuxilio(String descripcion, TipoReparacion tipoReparacion, boolean requiereRemolque,
 			BigDecimal costoUnitario) {
 
 		TipoAuxilio auxilioDisponible = tipoAuxilioService.crearTipoAuxilio(descripcion, tipoReparacion,
@@ -87,5 +128,62 @@ public class AuxilioService {
 		return tipoAuxilioABuscar;
 	}
 
+	public int pedidosPorTipoAuxilio(TipoAuxilio tipoAuxilio) {
+		int contador = 0;
+		for (Pedido pedido : auxilio.getPedidos()) {
+			if (pedido.getTipoAuxilio().equals(tipoAuxilio)) {
+				System.out.println(pedido);
+				contador++;
+
+			}
+
+		}
+		System.out.println("La cantidad de tipos de auxilio de: " + tipoAuxilio.getDescripion() + " es de: " + contador);
+		return contador;
+	}
+
+	public int pedidosPorTipoDeCobertura(TipoCobertura tipoCobertura) {
+		int contador = 0;
+		for (Pedido pedido : auxilio.getPedidos()) {
+			if (pedido.getCobertura().getTipoCobertura().equals(tipoCobertura)) {
+				contador = contador + 1;
+				System.out.println(pedido.toString());
+			}
+		}
+		System.out.println("La cantidad de tipos de cobertura de tipo: " + tipoCobertura + " es de: " + contador);
+		return contador;
+
+	}
+
+	public void vehiculosDiferenciadosPorPeso(int peso) {
+		int contadorMayores = 0;
+		int contadorMenores = 0;
+		String menosString = "";
+		String masString = "";
+		for (Pedido pedido : auxilio.getPedidos()) {
+			if (pedido.getVehiculo().getPeso() > peso) {
+				contadorMayores = contadorMayores + 1;
+				String pesoM = pedido.getVehiculo().getPeso().toString();
+				masString = masString + " | " + pesoM + "kg | ";
+			}
+			if (pedido.getVehiculo().getPeso() < peso) {
+				contadorMenores = contadorMenores + 1;
+				String pesoMe = pedido.getVehiculo().getPeso().toString();
+				menosString = menosString + " | " + pesoMe + "kg | ";
+			}
+		}
+		System.out.println("La cantidad de vehiculos con peso menores a " + peso + " es de: " + contadorMenores
+				+ " con un peso de " + menosString + ". La cantidad de vehiculos con peso mayores a " + peso + " es de: "
+				+ contadorMayores + " con un peso de " + masString);
+	}
+
+	public BigDecimal informarTotal() {
+		BigDecimal total = new BigDecimal(0);
+		for (Pedido pedido : auxilio.getPedidos()) {
+			total = total.add(pedido.getCliente().getCosto());
+		}
+		System.out.println("Total suma pedidos: ARS " + total);
+		return total;
+	}
 
 }

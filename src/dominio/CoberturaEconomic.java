@@ -9,11 +9,12 @@ public class CoberturaEconomic extends Cobertura {
 
 	@Override
 	public Boolean permiteRemolque() {
-		return false; // nunca se cumple
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
-	public TipoReparacion obtenerTipoDeReparacion() {
+	public TipoReparacion tipoReaparacion() {
 		// TODO Auto-generated method stub
 		return null;
 	}
