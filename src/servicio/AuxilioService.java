@@ -10,7 +10,7 @@ import dominio.TipoAuxilio;
 import dominio.TipoCobertura;
 import dominio.TipoReparacion;
 import dominio.Vehiculo;
-import Exceptions.noPermiteReparacion;
+import Exceptions.NoPermiteReparacion;
 
 public class AuxilioService {
 
@@ -53,7 +53,7 @@ public class AuxilioService {
 
 		try {
 			permiteReparacion = coberturaService.permiteReparacion(cobertura, tipoAuxilio, cantidadReparaciones);
-		} catch (noPermiteReparacion e) {
+		} catch (NoPermiteReparacion e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

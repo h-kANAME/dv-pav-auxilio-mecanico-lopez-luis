@@ -8,7 +8,7 @@ import dominio.CoberturaPlatinum;
 import dominio.TipoAuxilio;
 import dominio.TipoCobertura;
 import dominio.TipoReparacion;
-import Exceptions.noPermiteReparacion;
+import Exceptions.NoPermiteReparacion;
 
 public class CoberturaService {
 
@@ -27,19 +27,19 @@ public class CoberturaService {
 	}
 
 	public Boolean permiteReparacion(Cobertura cobertura, TipoAuxilio tipoAuxilio, Integer cantidadReparaciones)
-			throws noPermiteReparacion {
+			throws NoPermiteReparacion {
 		Boolean permiteReparacion;
 
 		if (tipoAuxilio.getRequiereRemolque().equals(true)
 				&& cobertura.getTipoCobertura().equals(TipoCobertura.ECONOMIC)) {
 			permiteReparacion = false;
-			throw new noPermiteReparacion("La cobertura Economic no permite pedidos de auxilio con remolque");
+			throw new NoPermiteReparacion("La cobertura Economic no permite pedidos de auxilio con remolque");
 		}
 		if (cobertura.getTipoCobertura().equals(TipoCobertura.ECONOMIC) & cantidadReparaciones >= 5
 				|| cobertura.getTipoCobertura().equals(TipoCobertura.ECONOMIC)
 						&& cobertura.getTipoReparacion().equals(TipoReparacion.COMPLEJO)) {
 			permiteReparacion = false;
-			throw new noPermiteReparacion(
+			throw new NoPermiteReparacion(
 					"La cobertura Economic no permite mas de 5 reparaciones, ni reparaciones complejas");
 		} else {
 			permiteReparacion = true;
